@@ -1,0 +1,21 @@
+enabled: true
+
+metadata_form:
+  fields:
+  - type: hidden
+    title: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.FILENAME
+    name: filename
+    readonly: true
+
+  - type: text
+    label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.TITLE
+    name: title
+    
+  - type: text
+    label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ALT
+    name: alt
+
+  - type: textarea
+    label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.CAPTION
+    name: caption
+    rows: 3
