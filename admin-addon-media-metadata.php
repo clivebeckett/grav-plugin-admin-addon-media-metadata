@@ -281,17 +281,19 @@ class AdminAddonMediaMetadataPlugin extends Plugin
 	 */
 	private function parseYamlFile($file)
 	{
-		$fileLines = file($file, FILE_IGNORE_NEW_LINES);
 		$yamlArray = [];
-		$i = 0;
-		foreach ($fileLines as $line) {
-			if (preg_match('~([a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
-				$key = $matches[1];
-				$val = $matches[2];
-				$yamlArray[$key] = $val;
-				$i++;
-			} elseif (isset($yamlArray[$key])) {
-				$yamlArray[$key] .= PHP_EOL . $line;
+		if (file_exists($file)) {
+			$fileLines = file($file, FILE_IGNORE_NEW_LINES);
+			$i = 0;
+			foreach ($fileLines as $line) {
+				if (preg_match('~([a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
+					$key = $matches[1];
+					$val = $matches[2];
+					$yamlArray[$key] = $val;
+					$i++;
+				} elseif (isset($yamlArray[$key])) {
+					$yamlArray[$key] .= PHP_EOL . $line;
+				}
 			}
 		}
 		return $yamlArray;
