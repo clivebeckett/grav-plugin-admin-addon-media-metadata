@@ -2,8 +2,8 @@
 namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
-use Grav\Common\Plugin;
 use Grav\Common\Page\Media;
+use Grav\Common\Plugin;
 
 /**
  * Class AdminAddonMediaMetadataPlugin
@@ -13,295 +13,295 @@ use Grav\Common\Page\Media;
  */
 class AdminAddonMediaMetadataPlugin extends Plugin
 {
-	const ROUTE = '/admin-addon-media-metadata';
-	const TASK_METADATA = 'AdminAddonMediaMetadataEdit';
+    const ROUTE = '/admin-addon-media-metadata';
+    const TASK_METADATA = 'AdminAddonMediaMetadataEdit';
 
-	/**
-	 * @return array
-	 *
-	 * The getSubscribedEvents() gives the core a list of events
-	 *	 that the plugin wants to listen to. The key of each
-	 *	 array section is the event that the plugin listens to
-	 *	 and the value (in the form of an array) contains the
-	 *	 callable (or function) as well as the priority. The
-	 *	 higher the number the higher the priority.
-	 */
-	public static function getSubscribedEvents()
-	{
-		return [
-			['autoload', 100000], // TODO: Remove when plugin requires Grav >=1.7
-			'onPluginsInitialized' => ['onPluginsInitialized', 0]
-		];
-	}
+    /**
+     * @return array
+     *
+     * The getSubscribedEvents() gives the core a list of events
+     *	 that the plugin wants to listen to. The key of each
+     *	 array section is the event that the plugin listens to
+     *	 and the value (in the form of an array) contains the
+     *	 callable (or function) as well as the priority. The
+     *	 higher the number the higher the priority.
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            ['autoload', 100000], // TODO: Remove when plugin requires Grav >=1.7
+            'onPluginsInitialized' => ['onPluginsInitialized', 0]
+        ];
+    }
 
-	/**
-	* Composer autoload.
-	* is
-	* @return ClassLoader
-	*/
-	public function autoload(): ClassLoader
-	{
-		return require __DIR__ . '/vendor/autoload.php';
-	}
+    /**
+     * Composer autoload.
+     * is
+     * @return ClassLoader
+     */
+    public function autoload(): ClassLoader
+    {
+        return require __DIR__ . '/vendor/autoload.php';
+    }
 
-	public function getPath()
-	{
-		return '/' . trim($this->grav['admin']->base, '/') . '/' . trim(self::ROUTE, '/');
-	}
+    public function getPath()
+    {
+        return '/' . trim($this->grav['admin']->base, '/') . '/' . trim(self::ROUTE, '/');
+    }
 
-	public function buildBaseUrl()
-	{
-		return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->getPath(), '/');
-	}
+    public function buildBaseUrl()
+    {
+        return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->getPath(), '/');
+    }
 
-	/**
-	 * Initialize the plugin
-	 */
-	public function onPluginsInitialized()
-	{
-		if (!$this->isAdmin() || !$this->grav['user']->authenticated) {
-			return;
-		}
+    /**
+     * Initialize the plugin
+     */
+    public function onPluginsInitialized()
+    {
+        if (!$this->isAdmin() || !$this->grav['user']->authenticated) {
+            return;
+        }
 
-		if ($this->grav['uri']->path() == $this->getPath()) {
-			$this->enable([
-				'onPagesInitialized' => ['processRenameRequest', 0]
-			]);
-			return;
-		}
+        if ($this->grav['uri']->path() == $this->getPath()) {
+            $this->enable([
+                'onPagesInitialized' => ['processRenameRequest', 0]
+            ]);
+            return;
+        }
 
-		$this->enable([
-			'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
-			'onPagesInitialized'  => ['onTwigExtensions', 0],
-			'onAdminAfterAddMedia' => ['createMetaYaml', 0],
-			'onAdminTaskExecute'  => ['editMetaDataFile', 0],
+        $this->enable([
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
+            'onPagesInitialized' => ['onTwigExtensions', 0],
+            'onAdminAfterAddMedia' => ['createMetaYaml', 0],
+            'onAdminTaskExecute' => ['editMetaDataFile', 0],
 //			'onAdminTaskExecute'  => ['editTest', 0],
-		]);
-	}
+        ]);
+    }
 
-	public function onTwigTemplatePaths()
-	{
-		$this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
-	}
+    public function onTwigTemplatePaths()
+    {
+        $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
+    }
 
-	public function onTwigExtensions()
-	{
-		$page = $this->grav['admin']->page(true);
-		if (!$page) {
-			return;
-		}
+    public function onTwigExtensions()
+    {
+        $page = $this->grav['admin']->page(true);
+        if (!$page) {
+            return;
+        }
 
-		/**
-		 * get metadata form field config from plugin admin-addon-media-metadata.yaml file
-		 */
-// TODO: optionally replace by local form definition file (in the current page folder)
-		$formFields = $this->config->get('plugins.admin-addon-media-metadata.metadata_form');
+        /**
+         * get metadata form field config from plugin admin-addon-media-metadata.yaml file
+         */
+        // TODO: optionally replace by local form definition file (in the current page folder)
+        $formFields = $this->config->get('plugins.admin-addon-media-metadata.metadata_form');
 
-		/**
-		 * list all needed data keys from the fields configuration
-		 */
-		$arrMetaKeys = $this->editableFields($formFields['fields']);
+        /**
+         * list all needed data keys from the fields configuration
+         */
+        $arrMetaKeys = $this->editableFields($formFields['fields']);
 
-		$path = $page->path();
-		$media = new Media($path);
-		$allMedia = $media->all();
-		$arrFiles = [];
-		$i = 0;
-		foreach ($allMedia as $filename => $file) {
-			$metadata = $file->meta();
-			$arrFiles[$filename] = [
-				'filename' => $filename,
-			];
-			/**
-			 * for each file: write stored metadata for each editable field into an array
-			 * this will be output as inline JS variable adminAddonMediaMetadata
-			 */
-			foreach ($arrMetaKeys as $metaKey => $info) {
-				$arrFiles[$filename][$metaKey] = $metadata->$metaKey;
-			}
-			$i++;
-		}
-		$inlineJs = 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
-		$modal = $this->grav['twig']->twig()->render('metadata-modal.twig.html', $formFields);
-		$jsConfig = [
-			'PATH' => $this->buildBaseUrl() . '/' . $page->route() . '/task:' . self::TASK_METADATA,
-			'MODAL' => $modal
-		];
-		$inlineJs .= PHP_EOL . 'var adminAddonMediaMetadata = ' . json_encode($jsConfig) . ';';
-		$this->grav['assets']->addInlineJs($inlineJs, -1000);
-		$this->grav['assets']->addCss('plugin://admin-addon-media-metadata/admin-addon-media-metadata.css', -1000);
-		$this->grav['assets']->addJs('plugin://admin-addon-media-metadata/admin-addon-media-metadata.js', -1000);
-	}
+        $path = $page->path();
+        $media = new Media($path);
+        $allMedia = $media->all();
+        $arrFiles = [];
+        $i = 0;
+        foreach ($allMedia as $filename => $file) {
+            $metadata = $file->meta();
+            $arrFiles[$filename] = [
+                'filename' => $filename,
+            ];
+            /**
+             * for each file: write stored metadata for each editable field into an array
+             * this will be output as inline JS variable adminAddonMediaMetadata
+             */
+            foreach ($arrMetaKeys as $metaKey => $info) {
+                $arrFiles[$filename][$metaKey] = $metadata->$metaKey;
+            }
+            $i++;
+        }
+        $inlineJs = 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
+        $modal = $this->grav['twig']->twig()->render('metadata-modal.twig.html', $formFields);
+        $jsConfig = [
+            'PATH' => $this->buildBaseUrl() . '/' . $page->route() . '/task:' . self::TASK_METADATA,
+            'MODAL' => $modal
+        ];
+        $inlineJs .= PHP_EOL . 'var adminAddonMediaMetadata = ' . json_encode($jsConfig) . ';';
+        $this->grav['assets']->addInlineJs($inlineJs, -1000);
+        $this->grav['assets']->addCss('plugin://admin-addon-media-metadata/admin-addon-media-metadata.css', -1000);
+        $this->grav['assets']->addJs('plugin://admin-addon-media-metadata/admin-addon-media-metadata.js', -1000);
+    }
 
-	public function editTest()
-	{
-		$this->outputError('blob');
-	}
+    public function editTest()
+    {
+        $this->outputError('blob');
+    }
 
-	public function editMetaDataFile($e)
-	{
-		$method = $e['method'];
-		if ($method === 'task' . self::TASK_METADATA) {
-			$fileName = $_POST['filename'];
+    public function editMetaDataFile($e)
+    {
+        $method = $e['method'];
+        if ($method === 'task' . self::TASK_METADATA) {
+            $fileName = $_POST['filename'];
 
-			$pageObj = $this->grav['admin']->page();
-			$basePath = $pageObj->path() . DS;
+            $pageObj = $this->grav['admin']->page();
+            $basePath = $pageObj->path() . DS;
 
-			$filePath = $basePath . $fileName;
+            $filePath = $basePath . $fileName;
 
-			if (!file_exists($filePath)) {
-				$this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
-			} else {
-				$metaDataFilePath = $filePath . '.meta.yaml';
+            if (!file_exists($filePath)) {
+                $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
+            } else {
+                $metaDataFilePath = $filePath . '.meta.yaml';
 
-				/**
-				 * get array of all current metadata for the file
-				 * this is to avoid overwriting data that has been added to the meta.yaml file in the file browser
-				 */
-// TODO: this should be done with core technology
-				$storedMetaData = $this->parseYamlFile($metaDataFilePath);
+                /**
+                 * get array of all current metadata for the file
+                 * this is to avoid overwriting data that has been added to the meta.yaml file in the file browser
+                 */
+                // TODO: this should be done with core technology
+                $storedMetaData = $this->parseYamlFile($metaDataFilePath);
 
-				/**
-				 * get the list of form data from the fields configuration
-				 */
-				$arrMetaKeys = $this->editableFields();
+                /**
+                 * get the list of form data from the fields configuration
+                 */
+                $arrMetaKeys = $this->editableFields();
 
-				/**
-				 * overwrite the currently stored data for each field in the form
-				 */
-				foreach ($arrMetaKeys as $metaKey => $info) {
-					if (isset($_POST[$metaKey])) {
-						// multiline entries for textareas of single line for text fields
-						if ($info['type'] === 'textarea') {
-							$textarea = explode(PHP_EOL, $_POST[$metaKey]);
-							if (count($textarea) > 1) {
-								$i = 0;
-								$multiline = '';
-								foreach ($textarea as $singleLine) {
-									$multiline .= ($i === 0) ? '|' : '';
-									$multiline .= PHP_EOL . '  ' . $singleLine;
-									$i++;
-								}
-							} else {
-								$multiline = $_POST[$metaKey];
-							}
-							$storedMetaData[$metaKey] = $multiline;
-						} else {
-							$storedMetaData[$metaKey] = $_POST[$metaKey];
-						}
-					}
-				}
+                /**
+                 * overwrite the currently stored data for each field in the form
+                 */
+                foreach ($arrMetaKeys as $metaKey => $info) {
+                    if (isset($_POST[$metaKey])) {
+                        // multiline entries for textareas of single line for text fields
+                        if ($info['type'] === 'textarea') {
+                            $textarea = explode(PHP_EOL, $_POST[$metaKey]);
+                            if (count($textarea) > 1) {
+                                $i = 0;
+                                $multiline = '';
+                                foreach ($textarea as $singleLine) {
+                                    $multiline .= ($i === 0) ? '|' : '';
+                                    $multiline .= PHP_EOL . '  ' . $singleLine;
+                                    $i++;
+                                }
+                            } else {
+                                $multiline = $_POST[$metaKey];
+                            }
+                            $storedMetaData[$metaKey] = $multiline;
+                        } else {
+                            $storedMetaData[$metaKey] = $_POST[$metaKey];
+                        }
+                    }
+                }
 
-				/**
-				 * set the new text for the meta.yaml file
-				 * including the overwritten and potential other values
-				 */
-				$newYamlText = '';
-				foreach ($storedMetaData as $yamlKey => $yamlVal) {
-					$newYamlText .= $yamlKey . ': ' . $yamlVal . PHP_EOL;
-				}
+                /**
+                 * set the new text for the meta.yaml file
+                 * including the overwritten and potential other values
+                 */
+                $newYamlText = '';
+                foreach ($storedMetaData as $yamlKey => $yamlVal) {
+                    $newYamlText .= $yamlKey . ': ' . $yamlVal . PHP_EOL;
+                }
 
-				/**
-				 * write the meta.yaml file
-				 */
-				$metaDataFile = fopen($metaDataFilePath, 'w');
-				fwrite($metaDataFile, trim($newYamlText));
-				fclose($metaDataFile);
+                /**
+                 * write the meta.yaml file
+                 */
+                $metaDataFile = fopen($metaDataFilePath, 'w');
+                fwrite($metaDataFile, trim($newYamlText));
+                fclose($metaDataFile);
 
-				//$this->outputError($newYamlText);
-			}
-		}
-	}
+                //$this->outputError($newYamlText);
+            }
+        }
+    }
 
-	/**
-	 * creates an image.meta.yaml file
-	 * this file will be deleted by the core when deleting an image
-	 * will be called after a media file has been added (see onPluginsInitialized())
-	 */
-	public function createMetaYaml()
-	{
-		$fileName = $_FILES['file']['name'];
+    /**
+     * creates an image.meta.yaml file
+     * this file will be deleted by the core when deleting an image
+     * will be called after a media file has been added (see onPluginsInitialized())
+     */
+    public function createMetaYaml()
+    {
+        $fileName = $_FILES['file']['name'];
 
-		$pageObj = $this->grav['admin']->page();
-		$basePath = $pageObj->path() . DS;
+        $pageObj = $this->grav['admin']->page();
+        $basePath = $pageObj->path() . DS;
 
-		$filePath = $basePath . $fileName;
-		if (!file_exists($filePath)) {
-			$this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
-		} else {
-// TODO: do that only for image files?
-// TODO: write the file with core standards? https://discourse.getgrav.org/t/store-and-read-data-in-grav/4461/5
-			$metaDataFileName = $fileName . '.meta.yaml';
-			$metaDataFilePath = $basePath . $metaDataFileName;
-			if (!file_exists($metaDataFilePath)) {
-				/**
-				 * get the list of form data from the fields configuration
-				 */
-				$arrMetaKeys = $this->editableFields();
+        $filePath = $basePath . $fileName;
+        if (!file_exists($filePath)) {
+            $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
+        } else {
+            // TODO: do that only for image files?
+            // TODO: write the file with core standards? https://discourse.getgrav.org/t/store-and-read-data-in-grav/4461/5
+            $metaDataFileName = $fileName . '.meta.yaml';
+            $metaDataFilePath = $basePath . $metaDataFileName;
+            if (!file_exists($metaDataFilePath)) {
+                /**
+                 * get the list of form data from the fields configuration
+                 */
+                $arrMetaKeys = $this->editableFields();
 
-				$yamlText = '';
-				foreach ($arrMetaKeys as $metaKey => $info) {
-					$yamlText .= $metaKey . ': ' . PHP_EOL;
-				}
+                $yamlText = '';
+                foreach ($arrMetaKeys as $metaKey => $info) {
+                    $yamlText .= $metaKey . ': ' . PHP_EOL;
+                }
 
-				$metaDataFile = fopen($metaDataFilePath, 'w');
-				fwrite($metaDataFile, trim($yamlText));
-				fclose($metaDataFile);
-			}
-		}
-	}
+                $metaDataFile = fopen($metaDataFilePath, 'w');
+                fwrite($metaDataFile, trim($yamlText));
+                fclose($metaDataFile);
+            }
+        }
+    }
 
-	/**
-	 * return all editable fields from form configuration
-	 */
-	private function editableFields($fieldsConf = null)
-	{
-		if ($fieldsConf === null) {
-			/**
-			 * get metadata form field config from plugin admin-addon-media-metadata.yaml file
-			 */
-// TODO: optionally replace by local form definition file (in the current page folder)
-			$formFields = $this->config->get('plugins.admin-addon-media-metadata.metadata_form');
-			$fieldsConf = $formFields['fields'];
-		}
-		$arrMetaKeys = [];
-		foreach ($fieldsConf as $singleFieldConf) {
-			if (isset($singleFieldConf['name'], $singleFieldConf['type']) && $singleFieldConf['name'] !== 'filename') {
-				$arrMetaKeys[$singleFieldConf['name']] = [
-					'name' => $singleFieldConf['name'],
-					'type' => $singleFieldConf['type']
-				];
-			}
-		}
-		return $arrMetaKeys;
-	}
+    /**
+     * return all editable fields from form configuration
+     */
+    private function editableFields($fieldsConf = null)
+    {
+        if ($fieldsConf === null) {
+            /**
+             * get metadata form field config from plugin admin-addon-media-metadata.yaml file
+             */
+            // TODO: optionally replace by local form definition file (in the current page folder)
+            $formFields = $this->config->get('plugins.admin-addon-media-metadata.metadata_form');
+            $fieldsConf = $formFields['fields'];
+        }
+        $arrMetaKeys = [];
+        foreach ($fieldsConf as $singleFieldConf) {
+            if (isset($singleFieldConf['name'], $singleFieldConf['type']) && $singleFieldConf['name'] !== 'filename') {
+                $arrMetaKeys[$singleFieldConf['name']] = [
+                    'name' => $singleFieldConf['name'],
+                    'type' => $singleFieldConf['type']
+                ];
+            }
+        }
+        return $arrMetaKeys;
+    }
 
-	/**
-	 * parse a meta.yaml file --> should be done with core technology
-	 */
-	private function parseYamlFile($file)
-	{
-		$yamlArray = [];
-		if (file_exists($file)) {
-			$fileLines = file($file, FILE_IGNORE_NEW_LINES);
-			$i = 0;
-			foreach ($fileLines as $line) {
-				if (preg_match('~([a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
-					$key = $matches[1];
-					$val = $matches[2];
-					$yamlArray[$key] = $val;
-					$i++;
-				} elseif (isset($yamlArray[$key])) {
-					$yamlArray[$key] .= PHP_EOL . $line;
-				}
-			}
-		}
-		return $yamlArray;
-	}
+    /**
+     * parse a meta.yaml file --> should be done with core technology
+     */
+    private function parseYamlFile($file)
+    {
+        $yamlArray = [];
+        if (file_exists($file)) {
+            $fileLines = file($file, FILE_IGNORE_NEW_LINES);
+            $i = 0;
+            foreach ($fileLines as $line) {
+                if (preg_match('~([a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
+                    $key = $matches[1];
+                    $val = $matches[2];
+                    $yamlArray[$key] = $val;
+                    $i++;
+                } elseif (isset($yamlArray[$key])) {
+                    $yamlArray[$key] .= PHP_EOL . $line;
+                }
+            }
+        }
+        return $yamlArray;
+    }
 
-	public function outputError($msg)
-	{
-		header('HTTP/1.1 400 Bad Request');
-		die(json_encode(['error' => ['msg' => $msg]]));
-	}
+    public function outputError($msg)
+    {
+        header('HTTP/1.1 400 Bad Request');
+        die(json_encode(['error' => ['msg' => $msg]]));
+    }
 }
