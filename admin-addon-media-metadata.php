@@ -4,6 +4,8 @@ namespace Grav\Plugin;
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Page\Media;
 use Grav\Common\Plugin;
+use Grav\Common\Yaml;
+use RocketTheme\Toolbox\File\File;
 
 /**
  * Class AdminAddonMediaMetadataPlugin
@@ -193,20 +195,11 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 }
 
                 /**
-                 * set the new text for the meta.yaml file
-                 * including the overwritten and potential other values
+                 * Get an instance of the meta file and write the data to it
+                 * @see \Grav\Common\Page\Media
                  */
-                $newYamlText = '';
-                foreach ($storedMetaData as $yamlKey => $yamlVal) {
-                    $newYamlText .= $yamlKey . ': ' . $yamlVal . PHP_EOL;
-                }
-
-                /**
-                 * write the meta.yaml file
-                 */
-                $metaDataFile = fopen($metaDataFilePath, 'w');
-                fwrite($metaDataFile, trim($newYamlText));
-                fclose($metaDataFile);
+                $metaDataFile = File::instance($metaDataFilePath);
+                $metaDataFile->save(Yaml::dump($storedMetaData));
 
                 //$this->outputError($newYamlText);
             }
