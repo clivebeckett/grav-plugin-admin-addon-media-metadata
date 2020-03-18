@@ -122,7 +122,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             $i++;
         }
         $inlineJs = 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
-        $modal = $this->grav['twig']->twig()->render('metadata-modal.twig.html', $formFields);
+        $modal = $this->grav['twig']->twig()->render('metadata-modal.html.twig', $formFields);
         $jsConfig = [
             'PATH' => $this->buildBaseUrl() . '/' . $page->route() . '/task:' . self::TASK_METADATA,
             'MODAL' => $modal
