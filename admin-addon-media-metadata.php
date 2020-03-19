@@ -283,7 +283,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 if (preg_match('~(^[a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
                     $key = $matches[1];
                     $val = $matches[2];
-                    $yamlArray[$key] = $val;
+                    $yamlArray[$key] = trim($val, '\'');
                     $i++;
                 } elseif (isset($yamlArray[$key])) {
                     $yamlArray[$key] .= PHP_EOL . $line;
