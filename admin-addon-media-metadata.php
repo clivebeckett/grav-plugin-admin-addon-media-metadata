@@ -77,7 +77,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             'onPagesInitialized' => ['onTwigExtensions', 0],
             'onAdminAfterAddMedia' => ['createMetaYaml', 0],
             'onAdminTaskExecute' => ['editMetaDataFile', 0],
-//			'onAdminTaskExecute'  => ['editTest', 0],
+//            'onAdminTaskExecute'  => ['editTest', 0],
         ]);
     }
 
@@ -223,7 +223,6 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
         } else {
             // TODO: do that only for image files?
-            // TODO: write the file with core standards? https://discourse.getgrav.org/t/store-and-read-data-in-grav/4461/5
             $metaDataFileName = $fileName . '.meta.yaml';
             $metaDataFilePath = $basePath . $metaDataFileName;
             if (!file_exists($metaDataFilePath)) {
@@ -232,14 +231,16 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  */
                 $arrMetaKeys = $this->editableFields();
 
-                $yamlText = '';
                 foreach ($arrMetaKeys as $metaKey => $info) {
-                    $yamlText .= $metaKey . ': ' . PHP_EOL;
-                }
+	                $newMetaData[$metaKey] = '';
+	            }
 
-                $metaDataFile = fopen($metaDataFilePath, 'w');
-                fwrite($metaDataFile, trim($yamlText));
-                fclose($metaDataFile);
+                /**
+                 * Get an instance of the meta file and write the data to it
+                 * @see \Grav\Common\Page\Media
+                 */
+                $metaDataFile = File::instance($metaDataFilePath);
+                $metaDataFile->save(Yaml::dump($newMetaData));
             }
         }
     }
@@ -279,7 +280,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             $fileLines = file($file, FILE_IGNORE_NEW_LINES);
             $i = 0;
             foreach ($fileLines as $line) {
-                if (preg_match('~([a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
+                if (preg_match('~(^[a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
                     $key = $matches[1];
                     $val = $matches[2];
                     $yamlArray[$key] = $val;
