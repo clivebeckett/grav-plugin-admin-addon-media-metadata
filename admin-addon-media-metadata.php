@@ -160,8 +160,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  * get array of all current metadata for the file
                  * this is to avoid overwriting data that has been added to the meta.yaml file in the file browser
                  */
-                // TODO: this should be done with core technology
-                $storedMetaData = $this->parseYamlFile($metaDataFilePath);
+                $storedMetaData = Yaml::parse(file_get_contents($metaDataFilePath));
 
                 /**
                  * get the list of form data from the fields configuration
@@ -231,6 +230,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  */
                 $arrMetaKeys = $this->editableFields();
 
+				$newMetaData = [];
                 foreach ($arrMetaKeys as $metaKey => $info) {
 	                $newMetaData[$metaKey] = '';
 	            }
@@ -268,29 +268,6 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             }
         }
         return $arrMetaKeys;
-    }
-
-    /**
-     * parse a meta.yaml file --> should be done with core technology
-     */
-    private function parseYamlFile($file)
-    {
-        $yamlArray = [];
-        if (file_exists($file)) {
-            $fileLines = file($file, FILE_IGNORE_NEW_LINES);
-            $i = 0;
-            foreach ($fileLines as $line) {
-                if (preg_match('~(^[a-zA-Z0-9_\-]+)\:[[:space:]]?(.*)~', $line, $matches)) {
-                    $key = $matches[1];
-                    $val = $matches[2];
-                    $yamlArray[$key] = trim($val, '\'');
-                    $i++;
-                } elseif (isset($yamlArray[$key])) {
-                    $yamlArray[$key] .= PHP_EOL . $line;
-                }
-            }
-        }
-        return $yamlArray;
     }
 
     public function outputError($msg)
