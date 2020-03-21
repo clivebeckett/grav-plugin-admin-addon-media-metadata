@@ -28,15 +28,13 @@ $(function() {
 		fileName = elementName.text();
 		$('[name=filename]', $modal).val(fileName);
 		if (mediaListOnLoad[fileName] !== undefined) {
-//			$('[name=filename]', $modal).val(mediaListOnLoad[fileName]['filename']);
-			$('[name=title]', $modal).val(mediaListOnLoad[fileName]['title']);
-			$('[name=alt]', $modal).val(mediaListOnLoad[fileName]['alt']);
-			$('[name=caption]', $modal).val(mediaListOnLoad[fileName]['caption']);
+			for (var i = 0; i < metadataFormFields.length; i++) {
+				$('[name=' + metadataFormFields[i] + ']', $modal).val(mediaListOnLoad[fileName][metadataFormFields[i]]);
+			}
 		} else {
-//			$('[name=filename]', $modal).val(fileName);
-			$('[name=title]', $modal).val('');
-			$('[name=alt]', $modal).val('');
-			$('[name=caption]', $modal).val('');
+			for (var i = 0; i < metadataFormFields.length; i++) {
+				$('[name=' + metadataFormFields[i] + ']', $modal).val('');
+			}
 		}
 		$modal.find('form span.filename').text(fileName);
 
@@ -51,35 +49,35 @@ $(function() {
 		$modal.find('.non-page-media-info').toggleClass('hidden', isPageMedia);
 	});
 
+	/**
+	 * add the new data dynamically to mediaListOnLoad JSON object
+	 * for newly uploaded media files as well as for “older” files, overwriting the data already in that JSON object
+	 * and save it in the YAML file
+	 * Variables from above ($(document).on), like fileName and $modal are still available
+	 */
 	$(document).on('click', '[data-remodal-id=modal-admin-addon-media-metadata] .button', function(e) {
-		// add the new data dynamically to mediaListOnLoad JSON object
-		// for newly uploaded media files as well as for “older” files, overwriting the data already in that JSON object
-		// and save it in the YAML file
-		// Variables from above ($(document).on), like fileName and $modal are still available
-		var newTitle = $('[name=title]', $modal).val();
-		var newAlt = $('[name=alt]', $modal).val();
-		var newCaption = $('[name=caption]', $modal).val();
+		// hiding the button and showing the loading icon
+		$('.loading', $modal).removeClass('hidden');
+		$('.button', $modal).addClass('hidden');
+
+		// create the file object for newly uploaded files
 		if (mediaListOnLoad[fileName] === undefined) {
 			mediaListOnLoad[fileName] = new Object();
 			mediaListOnLoad[fileName]['filename'] = fileName;
 		}
-		mediaListOnLoad[fileName]['title'] = newTitle;
-		mediaListOnLoad[fileName]['alt'] = newAlt;
-		mediaListOnLoad[fileName]['caption'] = newCaption;
-
-		/**
-		 * hiding the 
-		 */
-		$('.loading', $modal).removeClass('hidden');
-		$('.button', $modal).addClass('hidden');
 
 		// Do request with JS Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 		var data = new FormData();
 		data.append('filename', fileName);
-		data.append('title', newTitle);
-		data.append('alt', newAlt);
-		data.append('caption', newCaption);
 		data.append('admin-nonce', GravAdmin.config.admin_nonce);
+
+		// add the new values to mediaListOnLoad (for later updates before page reload)
+		// append the new values to the FormData (data.append)
+		for (var i = 0; i < metadataFormFields.length; i++) {
+			var newVal = $('[name=' + metadataFormFields[i] + ']', $modal).val();
+			mediaListOnLoad[fileName][metadataFormFields[i]] = newVal;
+			data.append(metadataFormFields[i], newVal);
+		}
 
 		fetch(adminAddonMediaMetadata.PATH, { method: 'POST', body: data, credentials: 'same-origin' })
 			//.then(res => res.json())

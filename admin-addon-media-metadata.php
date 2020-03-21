@@ -123,7 +123,16 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             }
             $i++;
         }
-        $inlineJs = 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
+
+        $jsArrFormFields = '';
+        $i = 0;
+        foreach ($arrMetaKeys as $metaKey => $info) {
+	        $jsArrFormFields .= ($i > 0) ? ",'" . $metaKey . "'" : "'" . $metaKey . "'";
+	        $i++;
+	    }
+
+        $inlineJs = 'var metadataFormFields = [' . $jsArrFormFields . '];';
+        $inlineJs .= PHP_EOL . 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
         $modal = $this->grav['twig']->twig()->render('metadata-modal.html.twig', $formFields);
         $jsConfig = [
             'PATH' => $this->buildBaseUrl() . '/' . $page->route() . '/task:' . self::TASK_METADATA,
@@ -171,25 +180,9 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  * overwrite the currently stored data for each field in the form
                  */
                 foreach ($arrMetaKeys as $metaKey => $info) {
+                    $newYamlText .= $metaKey;
                     if (isset($_POST[$metaKey])) {
-                        // multiline entries for textareas of single line for text fields
-                        if ($info['type'] === 'textarea') {
-                            $textarea = explode(PHP_EOL, $_POST[$metaKey]);
-                            if (count($textarea) > 1) {
-                                $i = 0;
-                                $multiline = '';
-                                foreach ($textarea as $singleLine) {
-                                    $multiline .= ($i === 0) ? '|' : '';
-                                    $multiline .= PHP_EOL . '  ' . $singleLine;
-                                    $i++;
-                                }
-                            } else {
-                                $multiline = $_POST[$metaKey];
-                            }
-                            $storedMetaData[$metaKey] = $multiline;
-                        } else {
-                            $storedMetaData[$metaKey] = $_POST[$metaKey];
-                        }
+	                    $storedMetaData[$metaKey] = $_POST[$metaKey];
                     }
                 }
 
