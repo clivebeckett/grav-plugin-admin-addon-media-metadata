@@ -180,7 +180,6 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  * overwrite the currently stored data for each field in the form
                  */
                 foreach ($arrMetaKeys as $metaKey => $info) {
-                    $newYamlText .= $metaKey;
                     if (isset($_POST[$metaKey])) {
 	                    $storedMetaData[$metaKey] = $_POST[$metaKey];
                     }
