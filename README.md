@@ -33,8 +33,8 @@ and add more form fields to the form by updating the copy. E.g. if you want to a
 
 ```
   - type: text
-    label: Web link (URL)
-    name: url
+    label: Web link
+    name: weblink
 ```
 
 The URL field will be available in your metadata form and you’ll be able edit the information.
