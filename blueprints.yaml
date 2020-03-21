@@ -1,6 +1,6 @@
 name: Admin Addon Media Metadata
 version: 1.0.0
-description: Edit metadata of (image) files in admin plugin
+description: 'This plugin is an addon for the Grav CMS Admin plugin and lets you add and edit metadata for media files'
 icon: plug
 author:
   name: Clive Beckett

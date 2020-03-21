@@ -9,7 +9,7 @@ The Admin plugin has not been offering a feature like this yet. In order to add/
 - the plugin will create and edit [mediafile].meta.yaml files in your page folder via a simple form in the Admin plugin
 - by default you can add/edit a **title,** **alt** text, and a **caption** – see *Configuration* section below on how to adapt this for your Grav installation
 - multiline text can be added (e.g. for caption)
-- potential other data in your meta.yaml file will not be overwritten even if the form does not let you change it
+- in case you are storing additional, manually added data in your [mediafile].meta.yaml file, it will not be overwritten even if the form does not let you change it
 
 ### How to use it
 
@@ -22,23 +22,32 @@ The Admin plugin has not been offering a feature like this yet. In order to add/
 
 To install the plugin manually, download the ZIP version of this repository and unzip it under `/your/site/grav/user/plugins`. Then rename the folder to `admin-addon-media-metadata`. You can find these files on [GitHub](https://github.com/clivebeckett/grav-plugin-admin-addon-media-metadata).
 
-Once the plugin is out of its beta state I will try and submit it to the Grav repository for installation via Grav’s package manager or via the Admin plugin.
+I will try and submit the plugin to the Grav repository for installation via Grav’s package manager or via the Admin plugin.
 
 ## Configuration
 
-If you want to add more data to your meta.yaml files, please copy the  
+The default fields in the metadata form are alt, title, and caption. If you want to add more data to your meta.yaml files, please copy  
 `user/plugins/admin-addon-media-metadata/admin-addon-media-metadata.yaml` to  
 `user/config/plugins/admin-addon-media-metadata.yaml`  
-and add more fields to the form by updating the copy.
+and add more form fields to the form by updating the copy. E.g. if you want to add a field for a web link, you might add the following lines:
+
+```
+  - type: text
+    label: Web link (URL)
+    name: url
+```
+
+The URL field will be available in your metadata form and you’ll be able edit the information.
 
 ## Credits
 
 I have based the plugin on Dávid Szabó’s [Admin Addon Media Rename plugin](https://github.com/david-szabo97/grav-plugin-admin-addon-media-rename). Much of the code would not have been possible for me without Dávid’s work.
 
+[@renards](https://github.com/renards) helped a lot in replacing my original self-written Yaml parsing and writing code with Grav core technology and thus made version 1.0.0 possible.
+
 ## ToDo
 
 - add the possibility for page-specific metadata forms
-- replace the small YAML file parser with Grav core technology
 
 ## Screenshots
 
