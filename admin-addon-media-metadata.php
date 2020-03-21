@@ -22,11 +22,11 @@ class AdminAddonMediaMetadataPlugin extends Plugin
      * @return array
      *
      * The getSubscribedEvents() gives the core a list of events
-     *	 that the plugin wants to listen to. The key of each
-     *	 array section is the event that the plugin listens to
-     *	 and the value (in the form of an array) contains the
-     *	 callable (or function) as well as the priority. The
-     *	 higher the number the higher the priority.
+     * that the plugin wants to listen to. The key of each
+     * array section is the event that the plugin listens to
+     * and the value (in the form of an array) contains the
+     * callable (or function) as well as the priority. The
+     * higher the number the higher the priority.
      */
     public static function getSubscribedEvents()
     {
@@ -127,9 +127,9 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         $jsArrFormFields = '';
         $i = 0;
         foreach ($arrMetaKeys as $metaKey => $info) {
-	        $jsArrFormFields .= ($i > 0) ? ",'" . $metaKey . "'" : "'" . $metaKey . "'";
-	        $i++;
-	    }
+            $jsArrFormFields .= ($i > 0) ? ",'" . $metaKey . "'" : "'" . $metaKey . "'";
+            $i++;
+        }
 
         $inlineJs = 'var metadataFormFields = [' . $jsArrFormFields . '];';
         $inlineJs .= PHP_EOL . 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
@@ -181,7 +181,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  */
                 foreach ($arrMetaKeys as $metaKey => $info) {
                     if (isset($_POST[$metaKey])) {
-	                    $storedMetaData[$metaKey] = $_POST[$metaKey];
+                        $storedMetaData[$metaKey] = $_POST[$metaKey];
                     }
                 }
 
@@ -222,10 +222,10 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                  */
                 $arrMetaKeys = $this->editableFields();
 
-				$newMetaData = [];
+                $newMetaData = [];
                 foreach ($arrMetaKeys as $metaKey => $info) {
-	                $newMetaData[$metaKey] = '';
-	            }
+                    $newMetaData[$metaKey] = '';
+                }
 
                 /**
                  * Get an instance of the meta file and write the data to it
