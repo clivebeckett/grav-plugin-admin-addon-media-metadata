@@ -1,3 +1,9 @@
+# v1.0.1
+##  10-04-2020
+
+1. [](#bugfix)
+    * meta.yaml file will now be created for an already uploaded media file that did not have an associated meta.yaml file before
+
 # v1.0.0
 ##  20-03-2020
 

@@ -166,22 +166,37 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 $metaDataFilePath = $filePath . '.meta.yaml';
 
                 /**
-                 * get array of all current metadata for the file
-                 * this is to avoid overwriting data that has been added to the meta.yaml file in the file browser
-                 */
-                $storedMetaData = Yaml::parse(file_get_contents($metaDataFilePath));
-
-                /**
                  * get the list of form data from the fields configuration
                  */
                 $arrMetaKeys = $this->editableFields();
 
-                /**
-                 * overwrite the currently stored data for each field in the form
-                 */
-                foreach ($arrMetaKeys as $metaKey => $info) {
-                    if (isset($_POST[$metaKey])) {
-                        $storedMetaData[$metaKey] = $_POST[$metaKey];
+                if (file_exists($metaDataFilePath)) {
+                    /**
+                     * get array of all current metadata for the file
+                     * this is to avoid overwriting data that has been added to the meta.yaml file in the file browser
+                     */
+                    $storedMetaData = Yaml::parse(file_get_contents($metaDataFilePath));
+
+                    /**
+                     * overwrite the currently stored data for each field in the form
+                     */
+                    foreach ($arrMetaKeys as $metaKey => $info) {
+                        if (isset($_POST[$metaKey])) {
+                            $storedMetaData[$metaKey] = $_POST[$metaKey];
+                        }
+                    }
+
+                } else {
+                    /**
+                     * create metaData in case the meta data file does not yet exist
+                     */
+                    $storedMetaData = [];
+                    foreach ($arrMetaKeys as $metaKey => $info) {
+                        if (isset($_POST[$metaKey])) {
+                            $storedMetaData[$metaKey] = $_POST[$metaKey];
+                        } else {
+                            $storedMetaData[$metaKey] = '';
+                        }
                     }
                 }
 
