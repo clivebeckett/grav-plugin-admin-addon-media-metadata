@@ -160,9 +160,16 @@ class AdminAddonMediaMetadataPlugin extends Plugin
 
             $filePath = $basePath . $fileName;
 
-            if (!file_exists($filePath)) {
-                $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
-            } else {
+/**
+ * temporarily removing the condition that checks for the media file to exist
+ * as in Admin plugin 1.10 a media file will be uploaded to a tmp folder first
+ * and moved to the page folder on saving the page
+ *
+ * there needs to be a better solution for this
+ */
+//          if (!file_exists($filePath)) {
+//              $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
+//          } else {
                 $metaDataFilePath = $filePath . '.meta.yaml';
 
                 /**
@@ -208,7 +215,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 $metaDataFile->save(Yaml::dump($storedMetaData));
 
                 //$this->outputError($newYamlText);
-            }
+//          }
         }
     }
 
@@ -219,6 +226,10 @@ class AdminAddonMediaMetadataPlugin extends Plugin
      */
     public function createMetaYaml()
     {
+/**
+ * does not work in Admin plugin 1.10 – even with the condition (!file_exists($filePath)) removed
+ * it’s as if it’s not being called
+ */
         $fileName = $_FILES['file']['name'];
 
         $pageObj = $this->grav['admin']->page();
