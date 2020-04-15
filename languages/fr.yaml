@@ -1,0 +1,10 @@
+PLUGIN_ADMIN_ADDON_MEDIA_METADATA:
+  FORM_HEADER: Editer les métadonnées pour ce média
+  FILENAME: Nom du fichier
+  TITLE: Titre
+  ALT: Description du média lorsqu'il ne peut être affiché (texte alternatif)
+  CAPTION: Légende
+  WRITING_DATA: Ajout des métadonnées
+  WRITING_FAILED: Impossible d'ajouter les métadonnées
+  ERRORS:
+    MEDIA_FILE_NOT_FOUND: Le fichier du média ne peut être trouvé
