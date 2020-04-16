@@ -1,3 +1,9 @@
+# v1.0.2
+##  16-04-2020
+
+1. [](#improved)
+    * The button next to a media file will now also be translated. It was hard-coded to English before.
+
 # v1.0.1
 ##  10-04-2020
 
