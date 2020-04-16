@@ -1,5 +1,6 @@
 PLUGIN_ADMIN_ADDON_MEDIA_METADATA:
-  FORM_HEADER: Metadaten für eine Mediendatei ändern
+  BUTTON: Metadaten ändern
+  FORM_HEADER: Metadaten für Mediendatei ändern
   FILENAME: Dateiname
   TITLE: Titel
   ALT: Beschreibung für den Fall, dass die Datei nicht angezeigt werden kann (alternativer Text)

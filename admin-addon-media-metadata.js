@@ -99,9 +99,9 @@ $(function() {
 			if ($(this).find('.dz-metadata-edit').length == 0) {
 				var editButton = document.createElement('a');
 				//editButton.href = 'javascript:undefined;';
-				editButton.title = 'Edit metadata';
+				editButton.title = adminAddonMediaMetadataButton;
 				editButton.className = 'dz-metadata-edit';
-				editButton.innerText = 'Edit Metadata';
+				editButton.innerText = adminAddonMediaMetadataButton;
 				var fileName = $(this).find('[data-dz-name]').text();
 				editButton.setAttribute('data-filename', fileName);
 				$(this).append(editButton);

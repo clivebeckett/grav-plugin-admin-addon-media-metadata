@@ -139,6 +139,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             'MODAL' => $modal
         ];
         $inlineJs .= PHP_EOL . 'var adminAddonMediaMetadata = ' . json_encode($jsConfig) . ';';
+        $inlineJs .= PHP_EOL . $this->grav['twig']->twig()->render('additionalInlineJS.html.twig');
         $this->grav['assets']->addInlineJs($inlineJs, -1000);
         $this->grav['assets']->addCss('plugin://admin-addon-media-metadata/admin-addon-media-metadata.css', -1000);
         $this->grav['assets']->addJs('plugin://admin-addon-media-metadata/admin-addon-media-metadata.js', -1000);
