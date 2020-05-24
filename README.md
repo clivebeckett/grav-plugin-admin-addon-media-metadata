@@ -20,9 +20,21 @@ The Admin plugin has not been offering a feature like this yet. In order to add/
 
 ## Installation
 
-To install the plugin manually, download the ZIP version of this repository and unzip it under `/your/site/grav/user/plugins`. Then rename the folder to `admin-addon-media-metadata`. You can find these files on [GitHub](https://github.com/clivebeckett/grav-plugin-admin-addon-media-metadata).
+### Grav Package Manager (GPM)
 
-I will try and submit the plugin to the Grav repository for installation via Grav’s package manager or via the Admin plugin.
+If you can access your Grav installation via the command line, install the plugin by typing the following from your Grav root:
+
+```
+bin/gpm install admin-addon-media-metadata
+```
+
+### Admin Tool Web Interface
+
+In the **Plugins** section, hit the **[+ Add]** button, search for Admin Addon Media Metadata and install.
+
+### Manual Installation
+
+To install the plugin manually, download the ZIP version of the latest release of this repository and unzip it under `/your/site/grav/user/plugins`. Then rename the folder to `admin-addon-media-metadata`. You can find these files on [GitHub](https://github.com/clivebeckett/grav-plugin-admin-addon-media-metadata/releases).
 
 ## Configuration
 
