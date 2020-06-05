@@ -47,19 +47,31 @@ and add more form fields to the form by updating the copy. E.g. if you want to a
   - type: text
     label: Web link
     name: weblink
+    placeholder: https://domain.tld/
 ```
 
 The URL field will be available in your metadata form and you’ll be able edit the information.
+
+### Additional Page Specific Metadata Fields
+
+You may also add page specific fields to a page’s frontmatter. *Note: The fields will be added to the form, not override the ones from the above mentioned config files:*
+
+```
+admin-addon-media-metadata:
+  metadata_form:
+    fields:
+      -
+        type: text
+        label: 'Yet another field'
+        name: yetAnotherField
+        placeholder: 'yet yet yet'
+```
 
 ## Credits
 
 I have based the plugin on Dávid Szabó’s [Admin Addon Media Rename plugin](https://github.com/david-szabo97/grav-plugin-admin-addon-media-rename). Much of the code would not have been possible for me without Dávid’s work.
 
 [@renards](https://github.com/renards) helped a lot in replacing my original self-written Yaml parsing and writing code with Grav core technology and thus made version 1.0.0 possible.
-
-## ToDo
-
-- add the possibility for page-specific metadata forms
 
 ## Screenshots
 
