@@ -18,6 +18,16 @@ The Admin plugin has not been offering a feature like this yet. In order to add/
 1. hover any file in your Page Media section
 2. hit the small «i» button to open the metadata form *(the regular «i» button which just showed the metadata will be overwritten by the plugin)*
 
+### NOTE on setting “Auto metadata from Exif”
+
+If your system is set to automatically write EXIF metadata  
+`(system.yaml → media.auto_metadata_exif: true)`
+
+- On **Admin Plugin 1.10:**  
+Please **save the page** after uploading an image and **before** you write additional metadata using this plugin. On saving the page, the Admin Plugin will create the meta.yaml file including the EXIF data – but it won’t do so if a meta.yaml file already exists.
+- On **Admin Plugin 1.9** and **admin-addon-media-metadata >= 1.1.0:**  
+There’s no problem here: the EXIF data will be written immediately upon upload whereas this plugin now only writes or edits meta.yaml files when needed.
+
 ## Installation
 
 ### Grav Package Manager (GPM)
@@ -52,7 +62,7 @@ and add more form fields to the form by updating the copy. E.g. if you want to a
 
 The URL field will be available in your metadata form and you’ll be able edit the information.
 
-### Additional Page Specific Metadata Fields
+### Additional Page Specific Metadata Fields (v1.1 and later)
 
 You may also add page specific fields to a page’s frontmatter. *Note: The fields will be added to the form, not override the ones from the above mentioned config files:*
 

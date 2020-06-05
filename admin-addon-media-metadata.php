@@ -167,9 +167,21 @@ class AdminAddonMediaMetadataPlugin extends Plugin
 
             $filePath = $basePath . $fileName;
 
-            if (!file_exists($filePath)) {
-                $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
-            } else {
+/**
+ * temporarily removing the condition that checks for the media file to exist
+ * as in Admin plugin 1.10 a media file will be uploaded to a tmp folder first
+ * and moved to the page folder on saving the page
+ *
+ * there needs to be a better solution for this
+ *
+ * also: take care of system.yaml → media.auto_metadata_exif
+ *     if set to TRUE, a meta.yaml with EXIF data will be written, but only if the meta.yaml does not yet exist
+ *     in Admin 1.10 you need to save a page in order to have the meta.yaml file with EXIF data created
+ *     in Admin 1.9 this is not a problem since this plugin now (>=1.1.0) writes metadata only when needed
+ */
+//          if (!file_exists($filePath)) {
+//              $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.MEDIA_FILE_NOT_FOUND', $filePath]));
+//          } else {
                 $metaDataFilePath = $filePath . '.meta.yaml';
 
                 /**
@@ -215,7 +227,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 $metaDataFile->save(Yaml::dump($storedMetaData));
 
                 //$this->outputError($newYamlText);
-            }
+//          }
         }
     }
 
