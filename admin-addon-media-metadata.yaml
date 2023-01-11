@@ -7,10 +7,15 @@ metadata_form:
     name: filename
     readonly: true
 
+  - type: hidden
+    title: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.FILEPATH
+    name: filepath
+    readonly: true
+
   - type: text
     label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.TITLE
     name: title
-    
+
   - type: text
     label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ALT
     name: alt

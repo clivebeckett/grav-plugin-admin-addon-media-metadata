@@ -16,6 +16,9 @@ $(function() {
 	// Append modal
 	$('body').append(adminAddonMediaMetadata.MODAL);
 
+	// add filepath to postable fields once
+	metadataFormFields.push('filepath');
+
 	$(document).off('click', '[data-dz-name], .dz-metadata-edit');
 	$(document).on('click', '[data-dz-name], .dz-metadata-edit', function(e) {
 		clickedElement = $(this);

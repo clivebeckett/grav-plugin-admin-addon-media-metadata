@@ -1,3 +1,9 @@
+# v.1.2.0
+## 11-01-2023
+
+1. [](#new)
+    * Added Support for files in flex-object data storage
+
 # v.1.1.0
 ## 05-06-2020
 

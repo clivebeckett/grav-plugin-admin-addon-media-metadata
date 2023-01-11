@@ -62,6 +62,8 @@ and add more form fields to the form by updating the copy. E.g. if you want to a
 
 The URL field will be available in your metadata form and you’ll be able edit the information.
 
+**Do not** remove or edit `filename` or `filepath` fields as the plugin requires them to run properly.
+
 ### Additional Page Specific Metadata Fields (v1.1 and later)
 
 You may also add page specific fields to a page’s frontmatter. *Note: The fields will be added to the form, not override the ones from the above mentioned config files:*
