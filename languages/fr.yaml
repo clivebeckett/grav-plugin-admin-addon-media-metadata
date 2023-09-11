@@ -2,6 +2,7 @@ PLUGIN_ADMIN_ADDON_MEDIA_METADATA:
   BUTTON: Editer les métadonnées pour ce média
   FORM_HEADER: Editer les métadonnées pour ce média
   FILENAME: Nom du fichier
+  FILEPATH: Chemin du fichier
   TITLE: Titre
   ALT: Description du média lorsqu'il ne peut être affiché (texte alternatif)
   CAPTION: Légende

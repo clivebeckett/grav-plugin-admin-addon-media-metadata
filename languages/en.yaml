@@ -2,6 +2,7 @@ PLUGIN_ADMIN_ADDON_MEDIA_METADATA:
   BUTTON: Edit metadata
   FORM_HEADER: Edit metadata for media file
   FILENAME: Filename
+  FILEPATH: File path
   TITLE: Title
   ALT: Describe the media file for when it can’t be displayed (alternative text)
   CAPTION: Caption

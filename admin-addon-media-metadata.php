@@ -51,9 +51,34 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         return '/' . trim($this->grav['admin']->base, '/') . '/' . trim(self::ROUTE, '/');
     }
 
-    public function buildBaseUrl()
+    public function getAdminBase()
     {
-        return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->getPath(), '/');
+        return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->grav['admin']->base, '/');
+    }
+
+    public function getFlexPage()
+    {
+        $page = $this->grav['page'];
+        $header = get_object_vars( $page->header() );
+        // can we determine this is a flex object?
+        if (!isset($header['controller']))
+        {
+            return;
+        }
+
+        // get the details of that object
+        $flex = $this->grav['flex'];
+        $target = $header['controller'];
+        // is this an existing flex directory?
+        if ( $flex->getDirectory( $target['type'] ) )
+        {
+            $object = $flex->getObject( $target['key'], $target['type'] );
+            return $object;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -87,9 +112,20 @@ class AdminAddonMediaMetadataPlugin extends Plugin
 
     public function onTwigExtensions()
     {
+        $contentObject = null;
         $page = $this->grav['admin']->page(true);
-        if (!$page) {
-            return;
+        $isFlex = $this->grav['config']->get( 'plugins.flex-objects.enabled' );
+
+        // is flex-objects plugin enabled
+        // we assume pages will be managed by flex-object
+        if ($isFlex)
+        {
+            $contentObject = $this->getFlexPage();
+        }
+        // if the flex-objects plugin is not active, we use the default page model
+        if(!$contentObject)
+        {
+            $contentObject = $page;
         }
 
         /**
@@ -106,11 +142,11 @@ class AdminAddonMediaMetadataPlugin extends Plugin
          */
         $arrMetaKeys = $this->editableFields($formFields['fields']);
 
-        $path = $page->path();
-        $media = new Media($path);
-        $allMedia = $media->all();
+        // get all media files from the content object
+        $allMedia = $contentObject->getMedia();
+        $mediaSource = $allMedia->getPath();
         $arrFiles = [];
-        $i = 0;
+
         foreach ($allMedia as $filename => $file) {
             $metadata = $file->meta();
             $arrFiles[$filename] = [
@@ -123,7 +159,8 @@ class AdminAddonMediaMetadataPlugin extends Plugin
             foreach ($arrMetaKeys as $metaKey => $info) {
                 $arrFiles[$filename][$metaKey] = $metadata->$metaKey;
             }
-            $i++;
+            // add the files folder path to the array
+            $arrFiles[$filename]['filepath'] = realpath( $mediaSource ) ;
         }
 
         $jsArrFormFields = '';
@@ -137,7 +174,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         $inlineJs .= PHP_EOL . 'var mediaListOnLoad = ' . json_encode($arrFiles) . ';';
         $modal = $this->grav['twig']->twig()->render('metadata-modal.html.twig', $formFields);
         $jsConfig = [
-            'PATH' => $this->buildBaseUrl() . '/' . $page->route() . '/task:' . self::TASK_METADATA,
+            'PATH' => $this->getAdminBase() . '/update.json/task:' . self::TASK_METADATA,
             'MODAL' => $modal
         ];
         $inlineJs .= PHP_EOL . 'var adminAddonMediaMetadata = ' . json_encode($jsConfig) . ';';
@@ -160,12 +197,10 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     {
         $method = $e['method'];
         if ($method === 'task' . self::TASK_METADATA) {
+            $basePath = $_POST['filepath'];
             $fileName = $_POST['filename'];
 
-            $pageObj = $this->grav['admin']->page();
-            $basePath = $pageObj->path() . DS;
-
-            $filePath = $basePath . $fileName;
+            $filePath = $basePath . '/' . $fileName;
 
 /**
  * temporarily removing the condition that checks for the media file to exist
@@ -227,6 +262,13 @@ class AdminAddonMediaMetadataPlugin extends Plugin
                 $metaDataFile->save(Yaml::dump($storedMetaData));
 
                 //$this->outputError($newYamlText);
+
+                // return something meaningful
+                $this->grav['admin']->json_response = [
+                    'status'  => 'success',
+                    'media-metadata' => 'true',
+                    'file' => $metaDataFilePath,
+                ];
 //          }
         }
     }
@@ -303,7 +345,10 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         }
         $arrMetaKeys = [];
         foreach ($fieldsConf as $singleFieldConf) {
-            if (isset($singleFieldConf['name'], $singleFieldConf['type']) && $singleFieldConf['name'] !== 'filename') {
+            if (
+                isset($singleFieldConf['name'], $singleFieldConf['type']) &&
+                $singleFieldConf['type'] !== 'hidden'
+            ) {
                 $arrMetaKeys[$singleFieldConf['name']] = [
                     'name' => $singleFieldConf['name'],
                     'type' => $singleFieldConf['type']
