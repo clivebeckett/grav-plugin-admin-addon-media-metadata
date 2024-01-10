@@ -32,7 +32,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     {
         return [
             ['autoload', 100000], // TODO: Remove when plugin requires Grav >=1.7
-            'onPluginsInitialized' => ['onPluginsInitialized', 0]
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
         ];
     }
 
@@ -44,41 +44,6 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     public function autoload(): ClassLoader
     {
         return require __DIR__ . '/vendor/autoload.php';
-    }
-
-    public function getPath()
-    {
-        return '/' . trim($this->grav['admin']->base, '/') . '/' . trim(self::ROUTE, '/');
-    }
-
-    public function getAdminBase()
-    {
-        return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->grav['admin']->base, '/');
-    }
-
-    public function getFlexPage()
-    {
-        $page = $this->grav['page'];
-        $header = get_object_vars( $page->header() );
-        // can we determine this is a flex object?
-        if (!isset($header['controller']))
-        {
-            return;
-        }
-
-        // get the details of that object
-        $flex = $this->grav['flex'];
-        $target = $header['controller'];
-        // is this an existing flex directory?
-        if ( $flex->getDirectory( $target['type'] ) )
-        {
-            $object = $flex->getObject( $target['key'], $target['type'] );
-            return $object;
-        }
-        else
-        {
-            return null;
-        }
     }
 
     /**
@@ -99,6 +64,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
 
         $this->enable([
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
+            'onTwigInitialized' => ['onTwigInitialized', 0],
             'onPagesInitialized' => ['onTwigExtensions', 0],
             //'onAdminAfterAddMedia' => ['createMetaYaml', 0], // removing the call of this method: see method below
             'onAdminTaskExecute' => ['editMetaDataFile', 0],
@@ -108,6 +74,13 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     public function onTwigTemplatePaths()
     {
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
+    }
+
+    public function onTwigInitialized()
+    {
+        $this->grav['twig']->twig()->addFunction(
+            new \Twig_SimpleFunction('aammPath', [$this, 'getCurrentObjectPath'])
+        );
     }
 
     public function onTwigExtensions()
@@ -197,6 +170,14 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     {
         $method = $e['method'];
         if ($method === 'task' . self::TASK_METADATA) {
+
+            if (isset($_POST['filepath']) && empty($_POST['filepath']))
+            {
+                // without a filepath, we cannot save.
+                $this->outputError($this->grav['language']->translate(['PLUGIN_ADMIN_ADDON_MEDIA_METADATA.ERRORS.NO_FILEPATH']));
+                return;
+            }
+
             $basePath = $_POST['filepath'];
             $fileName = $_POST['filename'];
 
@@ -362,5 +343,58 @@ class AdminAddonMediaMetadataPlugin extends Plugin
     {
         header('HTTP/1.1 400 Bad Request');
         die(json_encode(['error' => ['msg' => $msg]]));
+    }
+
+    public function getPath()
+    {
+        return '/' . trim($this->grav['admin']->base, '/') . '/' . trim(self::ROUTE, '/');
+    }
+
+    public function getAdminBase()
+    {
+        return rtrim($this->grav['uri']->rootUrl(true), '/') . '/' . trim($this->grav['admin']->base, '/');
+    }
+
+    public function getFlexPage()
+    {
+        $page = $this->grav['page'];
+        $header = get_object_vars( $page->header() );
+        // can we determine this is a flex object?
+        if (!isset($header['controller']))
+        {
+            return;
+        }
+
+        // get the details of that object
+        $flex = $this->grav['flex'];
+        $target = $header['controller'];
+        // is this an existing flex directory?
+        if ( $flex->getDirectory( $target['type'] ) )
+        {
+            $object = $flex->getObject( $target['key'], $target['type'] );
+            return $object;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public function getCurrentObjectPath()
+    {
+        $contentObject = null;
+        $page = $this->grav['admin']->page(true);
+        $isFlex = $this->grav['config']->get( 'plugins.flex-objects.enabled' );
+
+        if ($isFlex)
+        {
+            $contentObject = $this->getFlexPage();
+        }
+        // if the flex-objects plugin is not active, we use the default page model
+        if(!$contentObject)
+        {
+            $contentObject = $page;
+        }
+        return GRAV_ROOT . '/' . $contentObject->getMedia()->getPath();
     }
 }
