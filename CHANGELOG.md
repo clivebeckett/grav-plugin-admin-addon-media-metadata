@@ -1,3 +1,12 @@
+# v.1.2.1
+## 10-01-2024
+
+1. [](#bugfix)
+    * newly added files could not have metadata files, because there was no filepath information
+2. [](#improved)
+    * set line breaks to LF instead of CRLF
+
+
 # v.1.2.0
 ## 11-01-2023
 

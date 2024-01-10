@@ -82,8 +82,14 @@ $(function() {
             data.append(metadataFormFields[i], newVal);
         }
 
+        // mock the filepath for freshly (unsaved) files
+        if ( !data.get( 'filepath' ) )
+        {
+            data.set( 'filepath', adminAddonMediaMetadataPath );
+        }
+
         fetch(adminAddonMediaMetadata.PATH, { method: 'POST', body: data, credentials: 'same-origin' })
-            //.then(res => res.json())
+            .then(res => res.json())
             .then(result => {
                 if (result.error) {
                     var alertModal = $.remodal.lookup[$('[data-remodal-id=modal-admin-addon-media-metadata-alert]').data('remodal')];

@@ -10,3 +10,4 @@ PLUGIN_ADMIN_ADDON_MEDIA_METADATA:
   WRITING_FAILED: Metadaten konnten nicht geschrieben werden
   ERRORS:
     MEDIA_FILE_NOT_FOUND: Die Mediendatei konnte nicht gefunden werden
+    NO_FILEPATH: Es wurde kein Verzeichnispfad übergeben
