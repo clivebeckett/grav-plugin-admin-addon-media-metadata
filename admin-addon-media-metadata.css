@@ -1,40 +1,8 @@
 span[data-dz-name] {
-	cursor: text;
+    cursor: text;
 }
 
-.dz-metadata-edit {
-	display: none;
-	position: absolute;
-	width: 25px;
-	height: 25px;
-	right: -26px;
-	font-size: 0;
-	cursor: pointer;
-	background: #ededed;
-/* 	bottom: 25px; */
-	top: 49px;
-}
-
-.dz-metadata-edit:after {
-	text-align: center;
-	display: block;
-	font-family: FontAwesome;
-	font-size: 18px;
-	line-height: 25px;
-/* 	content: "\f044"; */
-	content: "\f05a";
-	color: #737c81;
-}
-
-.dz-metadata-edit:hover:after {
-	color: #0082ba;
-}
-
-.dropzone .dz-preview:hover .dz-metadata-edit {
-	display: block;
-}
-
-div.form-label { padding-right: 1rem; }
+[data-remodal-id="modal-admin-addon-media-metadata"] div.form-label { padding-right: 1rem; }
 [data-remodal-id=modal-admin-addon-media-metadata] h1 { line-height: 1; }
-form h1 span.header { }
-form h1 span.filename { font-size: 1rem; }
+[data-remodal-id=modal-admin-addon-media-metadata] h1 span.header { }
+[data-remodal-id=modal-admin-addon-media-metadata] h1 span.filename { font-size: 1rem; }

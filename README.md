@@ -64,6 +64,8 @@ The URL field will be available in your metadata form and you’ll be able edit 
 
 **Do not** remove or edit `filename` or `filepath` fields as the plugin requires them to run properly.
 
+Also nesting (multi level arrays) like `name: misc.tip` or `name: misc[tip]` is **not supported**.
+
 ### Additional Page Specific Metadata Fields (v1.1 and later)
 
 You may also add page specific fields to a page’s frontmatter. *Note: The fields will be added to the form, not override the ones from the above mentioned config files:*
@@ -78,6 +80,8 @@ admin-addon-media-metadata:
         name: yetAnotherField
         placeholder: 'yet yet yet'
 ```
+
+Having added this example code to the frontmatter of your page, it will add the new field 'Yet another field' to the metadata modal, but only for this specific page.
 
 ## Credits
 
