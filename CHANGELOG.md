@@ -1,3 +1,13 @@
+# v.1.2.2
+## 16-01-2024
+
+1. [](#bugfix)
+    * design fix for the dropzone trigger (#19)
+2. [](#improved)
+    * readme clarification for frontmatter usage (#18)
+    * readme clarification of not supporting nested array field names at the moment (#20)
+  
+
 # v.1.2.1
 ## 10-01-2024
 

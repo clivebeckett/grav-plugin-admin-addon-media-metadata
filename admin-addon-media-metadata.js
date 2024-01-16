@@ -32,11 +32,11 @@ $(function() {
         $('[name=filename]', $modal).val(fileName);
         if (mediaListOnLoad[fileName] !== undefined) {
             for (var i = 0; i < metadataFormFields.length; i++) {
-                $('[name=' + metadataFormFields[i] + ']', $modal).val(mediaListOnLoad[fileName][metadataFormFields[i]]);
+                $('[name="' + metadataFormFields[i] + '"]', $modal).val(mediaListOnLoad[fileName][metadataFormFields[i]]);
             }
         } else {
             for (var i = 0; i < metadataFormFields.length; i++) {
-                $('[name=' + metadataFormFields[i] + ']', $modal).val('');
+                $('[name="' + metadataFormFields[i] + '"]', $modal).val('');
             }
         }
         $modal.find('form span.filename').text(fileName);
@@ -77,7 +77,7 @@ $(function() {
         // add the new values to mediaListOnLoad (for later updates before page reload)
         // append the new values to the FormData (data.append)
         for (var i = 0; i < metadataFormFields.length; i++) {
-            var newVal = $('[name=' + metadataFormFields[i] + ']', $modal).val();
+            var newVal = $('[name="' + metadataFormFields[i] + '"]', $modal).val();
             mediaListOnLoad[fileName][metadataFormFields[i]] = newVal;
             data.append(metadataFormFields[i], newVal);
         }
@@ -107,15 +107,15 @@ $(function() {
         $('.dz-preview').each(function(i, dz) {
             if ($(this).find('.dz-metadata-edit').length == 0) {
                 var editButton = document.createElement('a');
-                //editButton.href = 'javascript:undefined;';
+                editButton.href = 'javascript:undefined;';
                 editButton.title = adminAddonMediaMetadataButton;
-                editButton.className = 'dz-metadata-edit';
+                editButton.className = 'dz-metadata-edit dz-metadata';
                 editButton.innerText = adminAddonMediaMetadataButton;
                 var fileName = $(this).find('[data-dz-name]').text();
                 editButton.setAttribute('data-filename', fileName);
                 $(this).append(editButton);
             }
-            $(this).find('.dz-metadata').remove();
+            $(this).find('.dz-metadata[data-dz-metadata]').remove();
         });
     }, 1000);
 });
