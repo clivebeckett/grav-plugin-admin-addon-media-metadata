@@ -110,6 +110,19 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         $config = $this->mergeConfig($page, true);
         $formFields = $config->get('metadata_form');
 
+        // clean up legacy configs
+        foreach ( $formFields['fields'] as $key => $field )
+        {
+            if ( in_array( $field['name'], [ 'filename', 'filepath' ] ) )
+            {
+                unset( $formFields['fields'][$key] );
+            }
+        }
+
+        // required hidden fields
+        $base_fields = $config->get( 'base_fields' );
+        $formFields['fields'] = array_merge( $base_fields, $formFields['fields'] );
+
         /**
          * list all needed data keys from the fields configuration
          */

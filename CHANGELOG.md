@@ -1,3 +1,9 @@
+# v.1.2.3
+## 11-03-2024
+
+1. [](#bugfix)
+    * making sure all mandatory hidden fields are included in the form and are not omitted/overwritten with custom form fields (#26)
+
 # v.1.2.2
 ## 16-01-2024
 

@@ -62,7 +62,7 @@ and add more form fields to the form by updating the copy. E.g. if you want to a
 
 The URL field will be available in your metadata form and you’ll be able edit the information.
 
-**Do not** remove or edit `filename` or `filepath` fields as the plugin requires them to run properly.
+**Do not** touch `base_fields` in config as the plugin requires them to run properly. You can delete this field fromt your custom configuration though (which makes future upgrades more safe).
 
 Also nesting (multi level arrays) like `name: misc.tip` or `name: misc[tip]` is **not supported**.
 
