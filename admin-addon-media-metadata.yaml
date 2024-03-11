@@ -1,7 +1,6 @@
 enabled: true
 
-metadata_form:
-  fields:
+base_fields:
   - type: hidden
     title: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.FILENAME
     name: filename
@@ -12,6 +11,8 @@ metadata_form:
     name: filepath
     readonly: true
 
+metadata_form:
+  fields:
   - type: text
     label: PLUGIN_ADMIN_ADDON_MEDIA_METADATA.TITLE
     name: title
