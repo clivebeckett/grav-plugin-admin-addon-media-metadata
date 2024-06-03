@@ -113,7 +113,7 @@ class AdminAddonMediaMetadataPlugin extends Plugin
         // clean up legacy configs
         foreach ( $formFields['fields'] as $key => $field )
         {
-            if ( in_array( $field['name'], [ 'filename', 'filepath' ] ) )
+            if ( array_key_exists('name', $field) && in_array( $field['name'], [ 'filename', 'filepath' ] ) )
             {
                 unset( $formFields['fields'][$key] );
             }
