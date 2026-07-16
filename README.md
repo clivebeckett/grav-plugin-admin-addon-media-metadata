@@ -1,5 +1,8 @@
 # Admin Addon Media Metadata Plugin
 
+> [!IMPORTANT]  
+> With the new admin2 this plugin is depricated since this feature got integrated natively. You can still use it with your grav 1.7 projects thought.
+
 The **Admin Addon Media Metadata** Plugin is an extension for the [Grav CMS](http://github.com/getgrav/grav) [Admin plugin](https://github.com/getgrav/grav-plugin-admin). It lets you add and **edit metadata for media files** in the Page Media browser.
 
 The Admin plugin has not been offering a feature like this yet. In order to add/edit metadata e.g. for an image you had to create a [image.filename].meta.yaml for the image in your file browser and edit it in a text editor.
